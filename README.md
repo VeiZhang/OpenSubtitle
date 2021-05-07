@@ -1,4 +1,4 @@
-** 在原作者基础上，加工 **
+**在原作者基础上，加工**
 >- https://github.com/wtekiela/opensub4j
 
 

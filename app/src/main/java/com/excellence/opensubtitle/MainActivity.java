@@ -1,19 +1,20 @@
 package com.excellence.opensubtitle;
 
 import android.os.Bundle;
+import android.util.Log;
 
-import com.github.wtekiela.opensub4j.impl.OpenSubtitlesClientImpl;
 import com.github.wtekiela.opensub4j.response.ListResponse;
-import com.github.wtekiela.opensub4j.response.MovieInfo;
-import com.github.wtekiela.opensub4j.response.Response;
+import com.github.wtekiela.opensub4j.response.ResponseStatus;
+import com.github.wtekiela.opensub4j.response.SubtitleFile;
+import com.github.wtekiela.opensub4j.response.SubtitleInfo;
 
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-
-import java.net.URL;
+import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,30 +25,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void testForOpenSubtitle() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL serverUrl = new URL("https", "api.opensubtitles.org", 443, "/xml-rpc");
+        new Thread(() -> {
+            try {
+                ListResponse<SubtitleInfo> searchResponse = OnlineSubtitleManager.getInstance()
+                        .searchSubtitle("", "The avengers", "", "");
+                if (ResponseStatus.OK.equals(searchResponse.getStatus())) {
+                    if (searchResponse.getData().isPresent()) {
 
-                    XmlRpcClientConfigImpl xmlRpcClientConfig = new XmlRpcClientConfigImpl();
-                    xmlRpcClientConfig.setServerURL(serverUrl);
-                    xmlRpcClientConfig.setEnabledForExtensions(true);
-                    xmlRpcClientConfig.setGzipCompressing(false);
-                    xmlRpcClientConfig.setGzipRequesting(false);
+                        List<SubtitleInfo> list = searchResponse.getData().get();
+                        for (SubtitleInfo item : list) {
+                            Log.d(TAG, "search subtitle: " + item.getFileName());
+                        }
 
-                    OpenSubtitlesClientImpl mOpenSubtitlesClient = new OpenSubtitlesClientImpl(xmlRpcClientConfig);
+                        if (list.size() > 0) {
+                            /**
+                             * 下载
+                             */
+                            SubtitleInfo subtitleInfo = list.get(0);
 
-                    Response loginResponse = mOpenSubtitlesClient.login("User",
-                            "Pwd", "en",
-                            "TemporaryUserAgent");
-                    System.out.println(loginResponse.getStatus().toString());
+                            Log.d(TAG, "download link: " + subtitleInfo.getDownloadLink());
 
-                    ListResponse<MovieInfo> response = mOpenSubtitlesClient.searchMoviesOnImdb("The avengers");
-                    System.out.println(response.getStatus().toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                            ListResponse<SubtitleFile> downloadResponse = OnlineSubtitleManager.getInstance()
+                                    .downloadSubtitle(subtitleInfo.getSubtitleFileId());
+                            if (downloadResponse.getData().isPresent()) {
+                                for (SubtitleFile item : downloadResponse.getData().get()) {
+                                    String content = item.getContent(item.getContent().getCharsetName()).getContent();
+                                    Log.d(TAG, item.getId() + ":");
+                                    Log.i(TAG, content);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Log.e(TAG, "search error: " + searchResponse.getStatus().getCode());
                 }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }).start();
     }
