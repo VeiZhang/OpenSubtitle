@@ -1,0 +1,3 @@
+include ':opensub'
+include ':app'
+rootProject.name = "OpenSubtitle"
