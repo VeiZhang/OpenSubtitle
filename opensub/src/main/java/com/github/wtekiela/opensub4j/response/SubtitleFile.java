@@ -59,6 +59,10 @@ public class SubtitleFile {
         return content.getContent();
     }
 
+    public String getEncodedContent() {
+        return encodedContent;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
@@ -79,8 +83,8 @@ public class SubtitleFile {
     @Override
     public String toString() {
         return new StringJoiner(", ", SubtitleFile.class.getSimpleName() + "[", "]")
-            .add("id=" + id)
-            .toString();
+                .add("id=" + id)
+                .toString();
     }
 
     public class Content {
