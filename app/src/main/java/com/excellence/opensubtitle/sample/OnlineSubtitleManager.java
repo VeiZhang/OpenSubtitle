@@ -1,4 +1,4 @@
-package com.excellence.opensubtitle;
+package com.excellence.opensubtitle.sample;
 
 import android.util.Log;
 
