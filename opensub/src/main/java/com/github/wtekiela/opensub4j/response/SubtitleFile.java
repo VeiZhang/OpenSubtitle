@@ -12,18 +12,20 @@
  */
 package com.github.wtekiela.opensub4j.response;
 
+import android.util.Base64;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SubtitleFile {
 
@@ -115,7 +117,7 @@ public class SubtitleFile {
         private String decode(String charsetName) {
             String content = null;
             try {
-                byte[] rawContent = Base64.getDecoder().decode(encodedContent);
+                byte[] rawContent = Base64.decode(encodedContent, Base64.DEFAULT);
                 content = decompress(rawContent, BUFFER_SIZE, charsetName);
             } catch (IOException e) {
                 LOGGER.error("Error while decompressing content", e);
