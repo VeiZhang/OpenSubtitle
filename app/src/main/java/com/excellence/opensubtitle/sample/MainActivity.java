@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.github.wtekiela.opensub4j.OnlineSubtitleManager;
 import com.github.wtekiela.opensub4j.response.ListResponse;
 import com.github.wtekiela.opensub4j.response.ResponseStatus;
 import com.github.wtekiela.opensub4j.response.SubtitleFile;
@@ -22,10 +23,14 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final String USER_NAME = "";
+    private static final String USER_PWD = "";
+
     private EditText mEditText = null;
     private Button mButton = null;
     private ListView mListView = null;
 
+    private OnlineSubtitleManager mOnlineSubtitleManager = null;
     private final List<SubtitleInfo> mSubtitleInfoList = new ArrayList<>();
 
     @Override
@@ -33,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mOnlineSubtitleManager = new OnlineSubtitleManager(USER_NAME, USER_PWD,
+                null, null);
 
         mEditText = findViewById(R.id.edit_text);
         mButton = findViewById(R.id.search_btn);
@@ -56,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "download link: " + subtitleInfo.getDownloadLink());
 
-                ListResponse<SubtitleFile> downloadResponse = OnlineSubtitleManager.getInstance()
+                ListResponse<SubtitleFile> downloadResponse = mOnlineSubtitleManager
                         .downloadSubtitle(subtitleInfo.getSubtitleFileId());
                 if (downloadResponse.getData().isPresent()) {
                     for (SubtitleFile item : downloadResponse.getData().get()) {
@@ -79,18 +86,15 @@ public class MainActivity extends AppCompatActivity {
 
         new Thread(() -> {
             try {
-                ListResponse<SubtitleInfo> searchResponse = OnlineSubtitleManager.getInstance()
+                ListResponse<SubtitleInfo> searchResponse = mOnlineSubtitleManager
                         .searchSubtitle("", search, "", "");
                 if (ResponseStatus.OK.equals(searchResponse.getStatus())) {
-                    if (searchResponse.getData().isPresent()) {
-
-                        List<SubtitleInfo> list = searchResponse.getData().get();
-                        for (SubtitleInfo item : list) {
-                            Log.d(TAG, "search subtitle: " + item.getFileName());
-                        }
-
-                        showSubtitleList(list);
+                    List<SubtitleInfo> list = searchResponse.getData().orElse(new ArrayList<>());
+                    for (SubtitleInfo item : list) {
+                        Log.d(TAG, "search subtitle: " + item.getFileName());
                     }
+
+                    showSubtitleList(list);
                 } else {
                     Log.e(TAG, "search error: " + searchResponse.getStatus().getCode());
                 }

@@ -1,4 +1,4 @@
-package com.excellence.opensubtitle.sample;
+package com.github.wtekiela.opensub4j;
 
 import android.util.Log;
 
@@ -12,7 +12,7 @@ import com.github.wtekiela.opensub4j.response.SubtitleInfo;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 import java.net.URL;
-import java.util.Locale;
+import java.util.List;
 
 /**
  * <pre>
@@ -26,23 +26,48 @@ public class OnlineSubtitleManager {
 
     private static final String TAG = OnlineSubtitleManager.class.getSimpleName();
 
-    private static OnlineSubtitleManager INSTANCE = new OnlineSubtitleManager();
-
     private static final long SESSION_TIMEOUT = 15 * 60 * 1000;
 
-    private static final String USER_NAME = "";
-    private static final String USER_PWD = "";
     private static final String USER_AGENT = "TemporaryUserAgent";
+    private static final String LANG_DEFAULT = "all";
+
+    private String mUserName;
+    private String mUserPwd;
+    private String mUserAgent;
+    private String mLanguages;
 
     private OpenSubtitlesClient mOpenSubtitlesClient;
     private long mTokenTime;
 
-    public static OnlineSubtitleManager getInstance() {
-        return INSTANCE;
+    public OnlineSubtitleManager(String userName, String pwd,
+                                 String userAgent,
+                                 List<String> langList) {
+        mUserName = userName;
+        mUserPwd = pwd;
+
+        setUserAgent(userAgent);
+        setLanguagesArray(langList);
+
+        initConfig();
     }
 
-    private OnlineSubtitleManager() {
-        initConfig();
+    private void setUserAgent(String userAgent) {
+        if (userAgent == null || userAgent.length() == 0) {
+            userAgent = USER_AGENT;
+        }
+        mUserAgent = userAgent;
+    }
+
+    public void setLanguagesArray(List<String> lang) {
+        if (lang == null || lang.size() == 0) {
+            mLanguages = LANG_DEFAULT;
+            return;
+        }
+        mLanguages = "";
+        for (String l : lang) {
+            mLanguages += "," + l;
+        }
+        mLanguages = mLanguages.substring(1);
     }
 
     private void initConfig() {
@@ -79,13 +104,13 @@ public class OnlineSubtitleManager {
 
         mTokenTime = System.currentTimeMillis();
 
-        Response response = mOpenSubtitlesClient.login(USER_NAME,
-                USER_PWD,
+        Response response = mOpenSubtitlesClient.login(mUserName,
+                mUserPwd,
                 /**
                  * 可设置 en
                  */
-                Locale.getDefault().getLanguage(),
-                USER_AGENT);
+                mLanguages,
+                mUserAgent);
         Log.i(TAG, "login: " + response.getStatus().toString());
     }
 
@@ -94,7 +119,7 @@ public class OnlineSubtitleManager {
 
         login();
 
-        ListResponse<SubtitleInfo> response = mOpenSubtitlesClient.searchSubtitles(Locale.getDefault().getLanguage(),
+        ListResponse<SubtitleInfo> response = mOpenSubtitlesClient.searchSubtitles(mLanguages,
                 null, null,
                 imdbId,
                 query, season, episode, null);
