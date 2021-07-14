@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 ListResponse<SubtitleInfo> searchResponse = mOnlineSubtitleManager
                         .searchSubtitle("", search, "", "");
                 if (ResponseStatus.OK.equals(searchResponse.getStatus())) {
-                    List<SubtitleInfo> list = searchResponse.getData().orElse(new ArrayList<>());
+                    List<SubtitleInfo> list = searchResponse.getData().or(new ArrayList<>());
                     for (SubtitleInfo item : list) {
                         Log.d(TAG, "search subtitle: " + item.getFileName());
                     }
