@@ -2,9 +2,9 @@ apply from: 'https://gist.githubusercontent.com/VeiZhang/aebbbd6d9d570dffac81eea
 
 /**发布到GitHub Packages仓库**/
 def LIB_GROUP_ID = 'com.excellence'
-def LIB_ARTIFACT_ID = 'opensubtitle'
+def LIB_ARTIFACT_ID = 'open-subtitles'
 def LIB_VERSION = '1.0.0'
-def LIB_DESC = 'open-subtitle'
+def LIB_DESC = 'https://www.opensubtitles.com/'
 def LIB_URL = 'https://github.com/VeiZhang/OpenSubtitle'
 
 publishing {
