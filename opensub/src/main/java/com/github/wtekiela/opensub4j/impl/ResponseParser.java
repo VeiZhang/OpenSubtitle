@@ -15,6 +15,11 @@ package com.github.wtekiela.opensub4j.impl;
 import com.github.wtekiela.opensub4j.response.ListResponse;
 import com.github.wtekiela.opensub4j.response.OpenSubtitlesApiSpec;
 import com.github.wtekiela.opensub4j.response.ResponseStatus;
+import com.google.common.base.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -22,10 +27,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ResponseParser {
 
@@ -164,7 +166,7 @@ class ResponseParser {
             } else {
                 // needed for responses other than 200 OK that have empty string in "data"
                 try {
-                    set(target, Optional.empty());
+                    set(target, Optional.absent());
                 } catch (IllegalAccessException e) {
                     LOGGER.warn(ILLEGAL_ACCESS_MSG, e);
                 }

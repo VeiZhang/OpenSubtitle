@@ -12,9 +12,10 @@
  */
 package com.github.wtekiela.opensub4j.response;
 
+import com.google.common.base.Optional;
+
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class ListResponse<T> extends Response {
 
