@@ -62,13 +62,17 @@ public class MainActivity extends AppCompatActivity {
                 SubtitleInfo subtitleInfo = mSubtitleInfoList.get(position);
 
                 Log.d(TAG, "download link: " + subtitleInfo.getDownloadLink());
+                Log.d(TAG, "encode link: " + subtitleInfo.encodeDownloadLink());
+//                Log.d(TAG, "download zip link: " + subtitleInfo.getZipDownloadLink());
+//                Log.d(TAG, "os link: " + subtitleInfo.getOsLink());
+                Log.d(TAG, "format: " + subtitleInfo.getFormat());
+                Log.d(TAG, "encoding: " + subtitleInfo.getEncoding());
 
                 ListResponse<SubtitleFile> downloadResponse = mOnlineSubtitleManager
                         .downloadSubtitle(subtitleInfo.getSubtitleFileId());
                 if (downloadResponse.getData().isPresent()) {
                     for (SubtitleFile item : downloadResponse.getData().get()) {
-                        String content = item.getContent(item.getContent().getCharsetName()).getContent();
-                        Log.d(TAG, item.getId() + ":");
+                        String content = item.getContent(subtitleInfo.getEncoding()).getContent();
                         Log.i(TAG, content);
                     }
                 }

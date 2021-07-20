@@ -46,13 +46,13 @@ public class SubtitleInfo {
 
     @OpenSubtitlesApiSpec(fieldName = "SubEncoding")
     private String encoding;
-    
+
     @OpenSubtitlesApiSpec(fieldName = "IDMovieImdb")
     private String imdbId;
-    
+
     @OpenSubtitlesApiSpec(fieldName = "SubSize")
     private int subtitleSize;
-    
+
     @OpenSubtitlesApiSpec(fieldName = "SubRating")
     private double subtitleRating;
 
@@ -113,15 +113,15 @@ public class SubtitleInfo {
     public String getEncoding() {
         return encoding;
     }
-    
+
     public String getImdbId() {
     	return imdbId;
     }
-    
+
     public int getSubtitleSize() {
     	return subtitleSize;
     }
-    
+
     public double getSubtitleRating() {
     	return subtitleRating;
     }
@@ -157,5 +157,25 @@ public class SubtitleInfo {
             .add("zipDownloadLink='" + zipDownloadLink + "'")
             .add("encoding='" + encoding + "'")
             .toString();
+    }
+
+    /**
+     * 使用{@link #downloadLink} 会有编码问题，需要搭配使用 {@link #encoding}
+     * 下面方法也可以，直接让服务器转换格式为utf-8
+     *
+     * https://dl.opensubtitles.org/en/download/src-api/vrf-19be0c59/sid-Es8Yw0zrLBHcaLjKikJ-2rHWo99/filead/1953189057.gz
+     * // add the /subencoding-utf8/ 转换为
+     * https://dl.opensubtitles.org/en/download/subencoding-utf8/src-api/vrf-19be0c59/sid-Es8Yw0zrLBHcaLjKikJ-2rHWo99/filead/1953189057
+     *
+     * @return
+     */
+    public String encodeDownloadLink() {
+        String subtitleLink = downloadLink;
+        if (subtitleLink == null) {
+            return subtitleLink;
+        }
+        subtitleLink = subtitleLink.replace("download/src-api", "download/subencoding-utf8/src-api");
+        subtitleLink = subtitleLink.replace(".gz", "");
+        return subtitleLink;
     }
 }
